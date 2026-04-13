@@ -27,7 +27,17 @@
         .progress-dot { width: 8px; height: 8px; border-radius: 50%; background: #cbd5e1; }
         .progress-dot.active { background: var(--accent); }
         
-        /* 微调公式在选项里的显示大小 */
+        /* 签名样式 */
+        .footer {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+            font-family: "STKaiti", "KaiTi", serif;
+        }
+
         .katex { font-size: 1.05em; }
     </style>
 </head>
@@ -50,10 +60,11 @@
         <div id="persona-desc" style="line-height: 1.7; text-align: left; color: #475569; font-size: 0.95rem;"></div>
         <button class="btn" onclick="location.reload()">再测一次</button>
     </div>
+
+    <div class="footer">—— Designed by 雯 ——</div>
 </div>
 
 <script>
-    // 20道充满考场精神状态的题库
     const questions = [
         {
             t: '导数压轴题第二问，要证 $x_1+x_2>2x_0$，式子长得像你祖宗，你心里想：',
@@ -227,7 +238,7 @@
             ]
         },
         {
-            t: '比分9:9（划掉），离收卷还有5分钟，压轴题最后一问，你发现时间不够了：',
+            t: '离收卷还有5分钟，压轴题最后一问，你发现时间不够了：',
             opts: [
                 { l: 'A', c: '挑简单的步骤写！把能拿的步骤分全拿到手，绝不恋战', w: 'brute' },
                 { l: 'B', c: '“开遮！”洛必达、泰勒齐上阵，管它超不超纲，糊弄上去再说', w: 'intuition' },
@@ -242,6 +253,7 @@
 
     function init() {
         const dots = document.getElementById('progress-dots');
+        dots.innerHTML = '';
         for(let i=0; i<questions.length; i++) {
             dots.innerHTML += `<div class="progress-dot ${i===0?'active':''}" id="dot-${i}"></div>`;
         }
@@ -274,7 +286,6 @@
         const card = document.getElementById('q-card');
         card.innerHTML = html;
         
-        // 渲染公式
         renderMathInElement(card, {
             delimiters: [ {left: '$', right: '$', display: false} ],
             throwOnError: false
@@ -286,14 +297,12 @@
     }
 
     function answer(weight, element) {
-        // 加一个点击效果的反馈
         element.style.borderColor = "#3b82f6";
         element.style.backgroundColor = "#e0e7ff";
         
         scores[weight]++;
         current++;
         
-        // 稍微延迟一下进入下一题，让视觉有个缓冲
         setTimeout(() => {
             if (current < questions.length) {
                 renderQ();
@@ -329,8 +338,8 @@
         };
 
         document.getElementById('persona-title').innerText = personas[top].t;
-        // 注意结果页如果有公式，也要重新渲染一下（比如眼位大师里的 $x$ 和 $y$）
         document.getElementById('persona-desc').innerHTML = personas[top].d;
+        
         renderMathInElement(document.getElementById('persona-desc'), {
             delimiters: [ {left: '$', right: '$', display: false} ]
         });
@@ -366,10 +375,7 @@
         `;
     }
 
-    // 核心修改：等待所有资源（特别是 KaTeX 库）加载完毕后再初始化
-    window.addEventListener('load', function() {
-        init();
-    });
+    window.addEventListener('load', init);
 </script>
 </body>
 </html>
