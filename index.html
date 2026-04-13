@@ -312,40 +312,53 @@
         }, 200);
     }
 
-    function showResult() {
-        document.getElementById('quiz-view').style.display = 'none';
-        document.getElementById('result-view').style.display = 'block';
-        
-        const top = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
-        
-        const personas = {
-            brute: {
-                t: '无情推土机 🚜',
-                d: '你就是考场上的西西弗斯！你极其讨厌花里胡哨的技巧，坚信“算力就是真理”。只要大方向没错，哪怕草稿纸算满三页你也不带虚的。韦达定理、暴风建系是你最忠实的伙伴，主打一个“硬刚到底，看谁先绷不住”。'
-            },
-            elegant: {
-                t: '同构仙人 🧚‍♂️',
-                d: '你对数学有一种近乎偏执的洁癖。极度厌恶脏活累活，看到不对称的式子浑身难受。做你的卷子就像看艺术品，别人在流汗狂算，你在找“同构”、“极点极线”和“放缩夹逼”，主打一个高维视角的降维打击。'
-            },
-            visual: {
-                t: '高维眼位大师 👁️',
-                d: '你的脑子里大概装了个显卡。万物皆可几何化，别人满眼都是恶心的 $x$ 和 $y$，你看到的全是圆、切线和法向量。遇到不会的题先画个图，只要图画得够准，答案自己就会浮现出来。'
-            },
-            intuition: {
-                t: '考场特值赌徒 🎲',
-                d: '你的直觉敏锐得可怕！遇事不决先代个特值，选择填空题基本靠“看一眼就觉得是这个”。做大题胆子大路子野，洛必达、泰勒展开等各种“禁术”开遮张手就来，极其擅长无中生有。'
-            }
-        };
+   function showResult() {
+    document.getElementById('quiz-view').style.display = 'none';
+    document.getElementById('result-view').style.display = 'block';
+    
+    // 1. 将得分从高到低排序 (核心算法升级)
+    // 假设你有四个维度: bs(爆算), gz(构造), zj(直觉), tx(图形)
+    let sortedTraits = Object.keys(scores).sort((a, b) => scores[b] - scores[a]);
+    
+    let main = sortedTraits[0];   // 得分最高（主属性）
+    let sub = sortedTraits[1];    // 得分第二（副属性）
+    let weak = sortedTraits[3];   // 得分最低（致命弱点）
 
-        document.getElementById('persona-title').innerText = personas[top].t;
-        document.getElementById('persona-desc').innerHTML = personas[top].d;
-        
-        renderMathInElement(document.getElementById('persona-desc'), {
-            delimiters: [ {left: '$', right: '$', display: false} ]
-        });
+    // 2. 准备“词根”字典 (你只需要写这几个短句，程序会自动排列组合出 48 种)
+    const prefixes = {
+        bs: "无情推土机式",
+        gz: "高维空间",
+        zj: "薛定谔的",
+        tx: "神级尺规"
+    };
 
-        drawRadar();
-    }
+    const coreNames = {
+        bs: "爆算狂魔",
+        gz: "同构仙人",
+        zj: "通灵预言家",
+        tx: "画图刺客"
+    };
+
+    const weaknesses = {
+        bs: "一旦算错一个符号就会全盘崩溃。",
+        gz: "经常把简单问题复杂化。",
+        zj: "过程分常常被扣得惨不忍睹。",
+        tx: "遇到纯代数证明题容易当场宕机。"
+    };
+
+    // 3. 动态拼接出那 48 种可能的结果！
+    // 比如：主属性是构造(gz)，副属性是直觉(zj)，弱点是爆算(bs)
+    // 就会生成："薛定谔的同构仙人"，描述里会带上"一旦算错..."
+    
+    let finalTitle = prefixes[sub] + coreNames[main]; 
+    let finalDesc = `你的核心武器是${coreNames[main]}的绝对实力，同时辅以${prefixes[sub]}的操作风格。你在考场上极具压迫感，但你的阿喀琉斯之踵在于：${weaknesses[weak]}`;
+
+    // 渲染到页面上
+    document.getElementById('persona-title').innerText = finalTitle;
+    document.getElementById('persona-desc').innerHTML = finalDesc;
+
+    drawRadar();
+}
 
     function drawRadar() {
         const box = document.getElementById('radar-chart');
